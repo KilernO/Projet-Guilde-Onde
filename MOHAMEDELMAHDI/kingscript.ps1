@@ -4,6 +4,8 @@ function Get-KingScript
     # 1. Nom PC
     $pcName = $env:COMPUTERNAME
     # 2. RAM (G)
+    # 3. Date et Heure
+    $currentDateTime = Get-Date -Format "dd/MM/yyyy HH:mm:ss"
     $ramGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1GB) 
     # 4. Disque C (space libres)
     $diskC = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'"
