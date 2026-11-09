@@ -25,4 +25,4 @@ if ($sleepEvent) { $lastSleep = $sleepEvent.TimeCreated } else { $lastSleep = "N
     Write-Host "Dernière mise en veille : $lastSleep" }
 
 # Exécution
-Get-KingScript
+Get-Kingscript
