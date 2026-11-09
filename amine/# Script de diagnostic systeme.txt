@@ -1,68 +1,33 @@
-# Script de diagnostic systeme
+# Diagnostic systeme ultra simple
 # Auteur : Amine
-# Fichier : amine.ps1
 
-# Clear-Host efface l'ecran de la console pour afficher un resultat propre
 Clear-Host
 
-# Write-Host affiche du texte a l'ecran (-ForegroundColor change la couleur du texte)
-Write-Host "--- DIAGNOSTIC SYSTEME ---" -ForegroundColor Cyan
+Write-Host "=== DIAGNOSTIC SYSTEME ===" -ForegroundColor Cyan
 Write-Host ""
 
-# ------------------------------------------------------------------------------
-# 1. NOM DE L'ORDINATEUR
-# ------------------------------------------------------------------------------
-# Le symbole $ crée une variable (une boîte qui stocke une information).
-# $env:COMPUTERNAME est une variable automatique de Windows qui contient le nom du PC.
-$nomPC = $env:COMPUTERNAME
-Write-Host "Nom du PC : $nomPC" -ForegroundColor Yellow
+# 1. Date et heure du diagnostic
+$date = Get-Date -Format "dd/MM/yyyy HH:mm"
+Write-Host "Date du scan   : $date" -ForegroundColor Gray
 
-# ------------------------------------------------------------------------------
-# 2. SYSTEME D'EXPLOITATION ET TEMPS D'ALLUMAGE
-# ------------------------------------------------------------------------------
-# Get-CimInstance interroge Windows pour recuperer les informations du systeme (Win32_OperatingSystem)
+# 2. Utilisateur connecte
+Write-Host "Utilisateur    : $env:USERNAME" -ForegroundColor Gray
+
+# 3. Nom du PC
+Write-Host "Nom du PC      : $env:COMPUTERNAME" -ForegroundColor Yellow
+
+# 4. Systeme d'exploitation
 $os = Get-CimInstance Win32_OperatingSystem
+Write-Host "Systeme        : $($os.Caption)" -ForegroundColor Green
 
-# On calcule la difference entre la date/heure actuelle (Get-Date) et la date du dernier demarrage ($os.LastBootUpTime)
-$allumage = (Get-Date) - $os.LastBootUpTime
+# 5. RAM libre (arrondie en nombre entier)
+$ramLibre = [int]($os.FreePhysicalMemory / 1MB)
+Write-Host "RAM disponible : $ramLibre Go" -ForegroundColor Magenta
 
-# $os.Caption contient la version exacte de Windows (ex: Windows 10 ou 11 Pro)
-Write-Host "Systeme : $($os.Caption)" -ForegroundColor Green
-Write-Host "Uptime : $($allumage.Days) jours, $($allumage.Hours) heures et $($allumage.Minutes) minutes" -ForegroundColor Green
-
-# ------------------------------------------------------------------------------
-# 3. CALCUL ET AFFICHAGE DE LA MEMOIRE RAM
-# ------------------------------------------------------------------------------
-# TotalVisibleMemorySize donne la RAM totale en Ko. Diviser par 1MB la convertit en Go.
-# [math]::Round(..., 1) permet d'arrondir le résultat pour garder seulement 1 chiffre apres la virgule.
-$ramTotal = [math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
-
-# FreePhysicalMemory donne la RAM libre. On la convertit aussi en Go.
-$ramLibre = [math]::Round($os.FreePhysicalMemory / 1MB, 1)
-
-# On calcule la RAM utilisee : RAM totale moins la RAM libre
-$ramUtilisee = [math]::Round($ramTotal - $ramLibre, 1)
-
-Write-Host "RAM utilisee : $ramUtilisee Go / $ramTotal Go (Libre : $ramLibre Go)" -ForegroundColor Magenta
-
-# ------------------------------------------------------------------------------
-# 4. ESPACE DISQUE (UTILISATION D'UNE BOUCLE FOREACH)
-# ------------------------------------------------------------------------------
-Write-Host "Espace Disque :" -ForegroundColor Cyan
-
-# On recupere les disques durs. Filter "DriveType=3" permet d'ignorer les cles USB ou lecteurs virtuels.
-$disques = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3"
-
-# La boucle foreach traite chaque disque un par un (si le PC a plusieurs disques durs)
-foreach ($d in $disques) {
-    # On convertit les Octets en Giga-Octets (divise par 1GB) et on arrondit
-    $total = [math]::Round($d.Size / 1GB, 1)
-    $libre = [math]::Round($d.FreeSpace / 1GB, 1)
-    $occupe = [math]::Round($total - $libre, 1)
-    
-    # $d.DeviceID affiche la lettre du disque (ex: C:)
-    Write-Host " - Disque $($d.DeviceID) $occupe Go utilises sur $total Go ($libre Go libres)"
-}
+# 6. Espace libre sur le disque C:
+$disque = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3 AND DeviceID='C:'"
+$disqueLibre = [int]($disque.FreeSpace / 1GB)
+Write-Host "Espace libre C : $disqueLibre Go" -ForegroundColor Cyan
 
 Write-Host ""
-Write-Host "--------------------------" -ForegroundColor Cyan
+Write-Host "==========================" -ForegroundColor Cyan
