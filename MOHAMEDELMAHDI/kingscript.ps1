@@ -1,12 +1,12 @@
 function Get-KingScript 
    { Write-Host "KING VOUS SALUE ET VOUS RASSURE : NE VOUS INQUIÉTEZ PAS, NOUS N'ACCÉDONS PAS À VOS INFORMATIONS PERSONNELLES. CE SCRIPT EST CONÇU AFIN DE VOUS AIDER À CONNAÎTRE LES SPÉCIFICITÉS DE VOTRE ORDINATEUR." -ForegroundColor Green
-    Write-Host ""
+    Write-Host "SALUT C'est kingsdn"
     # 1. Nom PC
     $pcName = $env:COMPUTERNAME
     # 2. RAM (G)
-    # 3. Date et Heure
+   $ramGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1GB) 
+   # 3. Date et Heure
     $currentDateTime = Get-Date -Format "dd/MM/yyyy HH:mm:ss"
-    $ramGB = [math]::Round((Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1GB) 
     # 4. Disque C (space libres)
     $diskC = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'"
     $freeC = [math]::Round($diskC.FreeSpace / 1GB)
@@ -18,6 +18,7 @@ function Get-KingScript
 if ($sleepEvent) { $lastSleep = $sleepEvent.TimeCreated } else { $lastSleep = "Non disponible" }
     # Affichage propre
     Write-Host "PC : $pcName"
+    Write-Host "Date et Heure : $currentDateTime"
     Write-Host "RAM : $ramGB Go"
     Write-Host "Disque C : $freeC Go libres"
     Write-Host "Batterie : $bat"
