@@ -3,7 +3,7 @@
 
 Clear-Host # Permet de ne pas afficher ce qui précède
 
-Write-Host '=== ANALYSE SYSTEME ===' -ForegroundColor Magenta
+Write-Host '=== ANALYSE SYSTEM ===' -ForegroundColor Magenta
 
 echo "" # Ecrire une ligne de vide d'espacer le contenu précédent avec le suivant
 
