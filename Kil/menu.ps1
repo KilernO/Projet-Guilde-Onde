@@ -34,6 +34,3 @@ Write-Host "Free Storage (C): $disqueLibre Go" -ForegroundColor Blue
 
 Write-Host ""
 Write-Host "==========================" -ForegroundColor Magenta
-
-Write-Host ""
-Write-Host "==========================" -ForegroundColor Cyan
